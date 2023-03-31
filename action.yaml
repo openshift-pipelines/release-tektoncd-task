@@ -1,0 +1,71 @@
+---
+name: task-releaser
+description: |
+  GitHub Action to manage a Tekton Task repository release, packaging the
+  following release artifacts and generating release notes to consume them:
+
+   - Tekton Task file (`.yaml`)
+   - Tekton Task Bundle container image (OCI)
+   - Helm-Chart package (`.tgz`)
+   - Helm-Chart container image (OCI)
+inputs:
+  bundle_tag_suffix:
+    description: |
+      Tekton Task-Bundle OCI container image tag suffix
+    default: "-bundle"
+    required: false
+  cli_version:
+    description: |
+      Tekton CLI (`tkn`) version
+    default: latest
+    required: false
+  helm_version:
+    description: |
+      Helm CLI (`helm`) version
+    default: latest
+    required: false
+  crane_version:
+    description: |
+      go-containerregistry/crane version
+    default: v0.13.0
+    required: false
+runs:
+  using: composite
+  steps:
+    # installing helm to package the local chart and render the task file template, both artifacts
+    # are part of the release payload
+    - uses: azure/setup-helm@v3
+      with:
+        version: ${{ inputs.helm_version }}
+
+    # install crane to manage the container images, created as artifacts for the release payload, the
+    # images are temporally stored on the local registry to receive annotations, and later on pushed
+    # to the final registry
+    - uses: imjasonh/setup-crane@v0.3
+      with:
+        version: ${{ inputs.crane_version }}
+
+    # installs the tkn in order to generate the task bundle container image
+    - uses: openshift-pipelines/setup-tektoncd-cli@v1
+      with:
+        version: ${{ inputs.cli_version }}
+
+    # asserts the requirements before runing the relese script
+    - shell: bash
+      run: ${{ github.action_path }}/probe.sh
+
+    # starting the local container registry instance
+    - shell: bash
+      working-directory: ${{ github.action_path }}
+      run: make registry-start
+
+    # release script, generates the payloads and release notes...
+    - shell: bash
+      env:
+        INPUT_BUNDLE_TAG_SUFFIX: ${{ inputs.bundle_tag_suffix }}
+      run: ${{ github.action_path }}/release.sh
+
+    # stopping the local container registry instance
+    - shell: bash
+      working-directory: ${{ github.action_path }}
+      run: make registry-stop
