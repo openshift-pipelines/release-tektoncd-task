@@ -37,7 +37,7 @@ kubectl apply -f "${release_url}/${TASK_FILE_NAME}"
 With \`tkn bundle\` you can rollout the Task from container-image, i.e:
 
 \`\`\`bash
-tkn bundle list "${TARGET_REGISTRY_NAMESPACE}/${CHART_NAME}:${BUNDLE_TAG}" task -o yaml | kubectl apply -f -
+tkn bundle list "${TARGET_BUNDLE_IMAGE_TAG}" task -o yaml | kubectl apply -f -
 \`\`\`
 
 ## Helm-Chart
@@ -53,6 +53,6 @@ helm install ${CHART_NAME} "${release_url}/${TARBALL_FILE_NAME}"
 Alternatively, you can use the Chart container image:
 
 \`\`\`bash
-helm install ${CHART_NAME} "oci://${TARGET_REGISTRY_NAMESPACE}/${CHART_NAME}" --version="${CHART_VERSION}"
+helm install ${CHART_NAME} "oci://${TARGET_REGISTRY_NAMESPACE}" --version="${CHART_VERSION}"
 \`\`\`
 EOS
