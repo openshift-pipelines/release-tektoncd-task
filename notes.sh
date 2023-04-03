@@ -53,6 +53,6 @@ helm install ${CHART_NAME} "${release_url}/${TARBALL_FILE_NAME}"
 Alternatively, you can use the Chart container image:
 
 \`\`\`bash
-helm install ${CHART_NAME} "oci://${TARGET_REGISTRY_NAMESPACE}" --version="${CHART_VERSION}"
+helm install ${CHART_NAME} "oci://${TARGET_REGISTRY_IMAGE}" --version="${CHART_VERSION}"
 \`\`\`
 EOS

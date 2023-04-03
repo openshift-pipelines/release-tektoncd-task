@@ -78,7 +78,6 @@ declare -rx TARGET_REGISTRY="ghcr.io"
 
 # local registry namespace is the registry hostname plus the namespace (username)
 declare -rx LOCAL_REGISTRY_NAMESPACE="${LOCAL_REGISTRY}/${GITHUB_REPOSITORY_OWNER}"
-declare -rx TARGET_REGISTRY_NAMESPACE="${TARGET_REGISTRY}/${GITHUB_REPOSITORY_OWNER}"
 
 # full image name for local and target container registries
 declare -rx LOCAL_REGISTRY_IMAGE="${LOCAL_REGISTRY}/${GITHUB_REPOSITORY}"
